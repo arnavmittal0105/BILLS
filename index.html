@@ -2,947 +2,250 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rough Bill Desk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rough Bill App</title>
     <style>
-        /* Base Styling */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f2f4f7;
-            color: #111827;
-            padding: 12px;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        /* Interactive Screen Only Elements */
-        .screen-only {
-            display: block;
-        }
-
-        /* Printable Section (Hidden on screen, shown on print) */
-        #print-section {
-            display: none;
-        }
-
-        /* Top Bar */
-        .header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            background: #ffffff;
-            padding: 10px 14px;
-            border-radius: 6px;
-            border: 1px solid #d1d5db;
-        }
-
-        .title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .btn-new-tab {
-            background: #059669;
-            color: #ffffff;
-            border: none;
-            padding: 8px 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            touch-action: manipulation;
-        }
-
-        /* Tabs Bar */
-        .tabs-bar {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            margin-bottom: 12px;
-            padding-bottom: 4px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tab-btn {
-            background: #e5e7eb;
-            border: 1px solid #d1d5db;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-radius: 6px 6px 0 0;
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        .tab-btn.active {
-            background: #ffffff;
-            border-bottom: 3px solid #2563eb;
-            font-weight: 700;
-            color: #1d4ed8;
-        }
-
-        .close-tab-btn {
-            background: transparent;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 0 4px;
-            line-height: 1;
-        }
-
-        .close-tab-btn:hover {
-            color: #dc2626;
-        }
-
-        /* Workspace Box */
-        .order-container {
-            background: #ffffff;
-            border: 1px solid #d1d5db;
-            padding: 16px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .top-meta {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .meta-field {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 140px;
-        }
-
-        .meta-field label {
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: #374151;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input[type="text"], input[type="number"], input[type="date"] {
-            padding: 8px 10px;
-            border: 1px solid #9ca3af;
-            border-radius: 4px;
-            font-size: 15px;
-            width: 100%;
-            background-color: #fff;
-            color: #111827;
-            -webkit-appearance: none;
-        }
-
-        input:focus {
-            outline: 2px solid #2563eb;
-            border-color: #2563eb;
-        }
-
-        /* Input Form Grid */
-        .add-item-form {
-            background: #f9fafb;
-            padding: 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            margin-bottom: 16px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: #4b5563;
-        }
-
-        .btn-add {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            touch-action: manipulation;
-        }
-
-        /* Items Table */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            margin-bottom: 16px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            background: #fff;
-        }
-
-        th, td {
-            border: 1px solid #d1d5db;
-            padding: 8px 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f3f4f6;
-            color: #374151;
-            font-weight: 700;
-        }
-
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-
-        .btn-delete {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 4px;
-        }
-
-        /* Summary Footer Bar */
-        .summary-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f3f4f6;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .summary-details {
-            display: flex;
-            gap: 20px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .btn-print-trigger {
-            background: #111827;
-            color: #ffffff;
-            border: none;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            touch-action: manipulation;
-        }
-
-        /* Modal Overlay */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 12px;
-        }
-
-        .modal-box {
-            background: #ffffff;
-            width: 100%;
-            max-width: 650px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e5e7eb;
-            flex-wrap: wrap;
-        }
-
-        .btn-sec {
-            background: #6b7280;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .btn-pri {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .btn-popup {
-            background: #059669;
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* Printable Receipt Structure */
-        .receipt-card {
-            border: 1px solid #000;
-            padding: 20px;
-            background: #fff;
-            color: #000;
-        }
-
-        .receipt-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 16px;
-        }
-
-        .receipt-cust-name {
-            font-size: 20px;
-            font-weight: 800;
-            color: #000;
-            text-transform: uppercase;
-        }
-
-        .receipt-date-val {
-            font-size: 15px;
-            font-weight: 700;
-            color: #000;
-        }
-
-        .receipt-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
-        }
-
-        .receipt-table th, .receipt-table td {
-            border: 1px solid #000;
-            padding: 8px;
-            font-size: 14px;
-            color: #000;
-        }
-
-        .receipt-table th {
-            background-color: #f2f2f2;
-            font-weight: 700;
-        }
-
-        .receipt-totals {
-            border-top: 2px solid #000;
-            padding-top: 10px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .receipt-totals-box {
-            width: 220px;
-            font-size: 15px;
-        }
-
-        .receipt-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .receipt-row-grand {
-            font-size: 18px;
-            font-weight: 800;
-            border-top: 1px solid #000;
-            padding-top: 6px;
-        }
-
-        /* CRITICAL PRINT CSS FOR IPHONE / MAC / ALL BROWSERS */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f4f4; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border: 1px solid #ccc; }
+        .tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+        .tab { padding: 8px 15px; background: #e0e0e0; border: 1px solid #b0b0b0; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .tab.active { background: #fff; border-bottom: 2px solid #fff; margin-bottom: -12px; color: #000; }
+        .tab-close { background: none; border: none; font-weight: bold; cursor: pointer; color: #d9534f; font-size: 14px; }
+        .new-tab-btn { padding: 8px 15px; background: #5cb85c; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .order-pane { display: none; }
+        .order-pane.active { display: block; }
+        .header-row { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
+        .header-group { display: flex; flex-direction: column; }
+        .header-group label { font-size: 12px; font-weight: bold; margin-bottom: 3px; }
+        .header-group input { padding: 6px; font-size: 14px; border: 1px solid #ccc; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 14px; }
+        th { background: #f0f0f0; }
+        input[type="text"], input[type="number"] { width: 100%; box-sizing: border-box; padding: 5px; border: 1px solid #ccc; }
+        .btn { padding: 8px 12px; cursor: pointer; border: 1px solid #ccc; background: #f8f8f8; font-weight: bold; }
+        .btn-add { background: #0275d8; color: white; border: none; margin-bottom: 15px; }
+        .btn-print { background: #f0ad4e; color: white; border: none; float: right; }
+        .btn-del { background: #d9534f; color: white; border: none; padding: 5px 10px; }
+        .totals { font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: right; }
+        
+        /* Print Styles - Strips all browser headers, URLs, and extra page info */
         @media print {
-            body {
-                background: #fff !important;
-                color: #000 !important;
-                padding: 0 !important;
-                margin: 0 !important;
+            @page {
+                size: auto;
+                margin: 5mm;
             }
-
-            .screen-only, .modal-backdrop, .header-bar, .tabs-bar, #active-workspace {
-                display: none !important;
-            }
-
-            #print-section {
-                display: block !important;
-                width: 100% !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                padding: 10px !important;
-            }
-
-            .receipt-card {
-                border: none !important;
-                padding: 0 !important;
-            }
+            body { background: none; padding: 0; }
+            .tabs, .btn, .no-print, input[type="text"], input[type="number"], .btn-add, .btn-del { display: none !important; }
+            .container { border: none; padding: 0; max-width: 100%; }
+            .order-pane { display: none !important; }
+            .order-pane.active { display: block !important; }
+            .print-only-header { display: flex !important; justify-content: space-between; font-size: 16px; font-weight: bold; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+            .print-hide-col { display: none !important; }
+            table { width: 100% !important; border: 1px solid #000; }
+            th, td { border: 1px solid #000; padding: 6px; font-size: 13px; }
+            .totals { font-size: 15px; font-weight: bold; }
         }
+        .print-only-header { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- SCREEN INTERFACE CONTAINER -->
-    <div class="screen-only">
-        <!-- Top App Bar -->
-        <div class="header-bar">
-            <div class="title">Rough Bill Desk</div>
-            <button class="btn-new-tab" onclick="createNewTab()">+ New Order Tab</button>
-        </div>
-
-        <!-- Order Tabs Navigation -->
-        <div id="tabs-bar" class="tabs-bar"></div>
-
-        <!-- Active Tab Order Workspace -->
-        <div id="active-workspace"></div>
+<div class="container">
+    <div class="tabs" id="tabsContainer">
+        <button class="new-tab-btn" onclick="addNewOrderTab()">+ New Order</button>
     </div>
+    <div id="ordersContainer"></div>
+</div>
 
-    <!-- PREVIEW MODAL -->
-    <div id="modal-preview" class="modal-backdrop screen-only">
-        <div class="modal-box">
-            <div class="modal-actions">
-                <button class="btn-sec" onclick="closePreview()">Close</button>
-                <button class="btn-popup" onclick="openPrintSheetInNewWindow()">Open Printable Sheet</button>
-                <button class="btn-pri" onclick="triggerDirectPrint()">Print Direct</button>
+<script>
+    let orderCount = 0;
+
+    function createOrderTab(name = "") {
+        orderCount++;
+        const orderId = 'order_' + orderCount;
+        const orderName = name || `Order ${orderCount}`;
+        const today = new Date().toISOString().split('T')[0];
+
+        // Create Tab Button
+        const tabBtn = document.createElement('div');
+        tabBtn.className = 'tab';
+        tabBtn.dataset.target = orderId;
+        tabBtn.innerHTML = `
+            <span class="tab-title" onclick="switchTab('${orderId}')">${orderName}</span>
+            <button class="tab-close" onclick="closeTab(event, '${orderId}')">×</button>
+        `;
+        document.getElementById('tabsContainer').insertBefore(tabBtn, document.querySelector('.new-tab-btn'));
+
+        // Create Order Content Pane
+        const pane = document.createElement('div');
+        pane.id = orderId;
+        pane.className = 'order-pane';
+        pane.innerHTML = `
+            <!-- Print Header -->
+            <div class="print-only-header">
+                <div>Customer: <span class="p-cust-name"></span></div>
+                <div>Date: <span class="p-date"></span></div>
             </div>
 
-            <!-- Preview Receipt Display -->
-            <div class="receipt-card">
-                <div class="receipt-header">
-                    <div>
-                        <div style="font-size: 11px; text-transform: uppercase; color: #555; font-weight: bold;">Customer Name</div>
-                        <div id="prev-name" class="receipt-cust-name">-</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 11px; text-transform: uppercase; color: #555; font-weight: bold;">Date</div>
-                        <div id="prev-date" class="receipt-date-val">-</div>
-                    </div>
+            <div class="header-row no-print">
+                <div class="header-group">
+                    <label>Customer Name</label>
+                    <input type="text" class="cust-name-input" placeholder="Enter customer name" oninput="updatePrintHeader('${orderId}')">
                 </div>
-
-                <table class="receipt-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px;">#</th>
-                            <th>Item Name</th>
-                            <th class="text-right" style="width: 60px;">Pcs</th>
-                            <th class="text-right" style="width: 90px;">Net Wt</th>
-                            <th class="text-right" style="width: 80px;">Rate</th>
-                            <th class="text-right" style="width: 100px;">Price</th>
-                        </tr>
-                    </thead>
-                    <tbody id="prev-table-body"></tbody>
-                </table>
-
-                <div class="receipt-totals">
-                    <div class="receipt-totals-box">
-                        <div class="receipt-row">
-                            <span>Total Net Wt:</span>
-                            <strong id="prev-total-net">0.000</strong>
-                        </div>
-                        <div class="receipt-row receipt-row-grand">
-                            <span>Total Price:</span>
-                            <span id="prev-total-price">₹0.00</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- DEDICATED DOM TARGET FOR NATIVE PRINTING -->
-    <div id="print-section">
-        <div class="receipt-card">
-            <div class="receipt-header">
-                <div>
-                    <div style="font-size: 11px; text-transform: uppercase; color: #555; font-weight: bold;">Customer Name</div>
-                    <div id="print-target-name" class="receipt-cust-name">-</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-size: 11px; text-transform: uppercase; color: #555; font-weight: bold;">Date</div>
-                    <div id="print-target-date" class="receipt-date-val">-</div>
+                <div class="header-group">
+                    <label>Date</label>
+                    <input type="date" class="date-input" value="${today}" oninput="updatePrintHeader('${orderId}')">
                 </div>
             </div>
 
-            <table class="receipt-table">
+            <button class="btn btn-add no-print" onclick="addItem('${orderId}')">+ Add Item</button>
+            <button class="btn btn-print" onclick="printOrder('${orderId}')">Print Bill</button>
+
+            <table>
                 <thead>
                     <tr>
-                        <th style="width: 40px;">#</th>
                         <th>Item Name</th>
-                        <th class="text-right" style="width: 60px;">Pcs</th>
-                        <th class="text-right" style="width: 90px;">Net Wt</th>
-                        <th class="text-right" style="width: 80px;">Rate</th>
-                        <th class="text-right" style="width: 100px;">Price</th>
+                        <th class="print-hide-col">Gross Wt</th>
+                        <th class="print-hide-col">Tare</th>
+                        <th>Net Wt</th>
+                        <th>Pcs</th>
+                        <th>Rate</th>
+                        <th>Price</th>
+                        <th class="no-print" style="width: 50px;">Action</th>
                     </tr>
                 </thead>
-                <tbody id="print-target-body"></tbody>
+                <tbody class="items-tbody"></tbody>
             </table>
 
-            <div class="receipt-totals">
-                <div class="receipt-totals-box">
-                    <div class="receipt-row">
-                        <span>Total Net Wt:</span>
-                        <strong id="print-target-total-net">0.000</strong>
-                    </div>
-                    <div class="receipt-row receipt-row-grand">
-                        <span>Total Price:</span>
-                        <span id="print-target-total-price">₹0.00</span>
-                    </div>
-                </div>
+            <div class="totals">
+                Total Net Wt: <span class="total-net">0.00</span> | Total Price: <span class="total-price">0.00</span>
             </div>
-        </div>
-    </div>
+        `;
+        document.getElementById('ordersContainer').appendChild(pane);
 
-    <script>
-        // State Storage
-        let orders = [];
-        let activeOrderId = null;
+        switchTab(orderId);
+        addItem(orderId);
+    }
 
-        window.onload = function() {
-            createNewTab();
-        };
+    function switchTab(orderId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.order-pane').forEach(p => p.classList.remove('active'));
 
-        function getTodayDate() {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+        const tab = document.querySelector(`.tab[data-target="${orderId}"]`);
+        const pane = document.getElementById(orderId);
+        if (tab && pane) {
+            tab.classList.add('active');
+            pane.classList.add('active');
+        }
+    }
+
+    function closeTab(event, orderId) {
+        event.stopPropagation();
+        const tabs = document.querySelectorAll('.tab');
+        if (tabs.length <= 1) {
+            alert("You must keep at least one active order tab.");
+            return;
         }
 
-        function createNewTab() {
-            const id = 'ord_' + Date.now();
-            const orderNum = orders.length + 1;
-            const newOrder = {
-                id: id,
-                title: 'Order ' + orderNum,
-                customerName: '',
-                date: getTodayDate(),
-                items: []
-            };
+        document.querySelector(`.tab[data-target="${orderId}"]`).remove();
+        document.getElementById(orderId).remove();
 
-            orders.push(newOrder);
-            activeOrderId = id;
-            renderTabs();
-            renderWorkspace();
+        const remainingTabs = document.querySelectorAll('.tab');
+        if (remainingTabs.length > 0) {
+            switchTab(remainingTabs[0].dataset.target);
         }
+    }
 
-        function closeTab(e, id) {
-            e.stopPropagation();
-            if (orders.length <= 1) {
-                const order = orders.find(o => o.id === id);
-                if (order) {
-                    order.customerName = '';
-                    order.date = getTodayDate();
-                    order.items = [];
-                    renderTabs();
-                    renderWorkspace();
-                }
-                return;
-            }
+    function updatePrintHeader(orderId) {
+        const pane = document.getElementById(orderId);
+        const nameVal = pane.querySelector('.cust-name-input').value || 'Cash Customer';
+        const dateVal = pane.querySelector('.date-input').value;
+        
+        pane.querySelector('.p-cust-name').innerText = nameVal;
+        pane.querySelector('.p-date').innerText = dateVal;
 
-            orders = orders.filter(o => o.id !== id);
-            if (activeOrderId === id) {
-                activeOrderId = orders[orders.length - 1].id;
-            }
-            renderTabs();
-            renderWorkspace();
-        }
+        // Update tab label too
+        const tab = document.querySelector(`.tab[data-target="${orderId}"] .tab-title`);
+        if (tab) tab.innerText = pane.querySelector('.cust-name-input').value || 'Order';
+    }
 
-        function switchTab(id) {
-            activeOrderId = id;
-            renderTabs();
-            renderWorkspace();
-        }
+    function addItem(orderId) {
+        const pane = document.getElementById(orderId);
+        const tbody = pane.querySelector('.items-tbody');
+        const row = document.createElement('tr');
 
-        function renderTabs() {
-            const container = document.getElementById('tabs-bar');
-            container.innerHTML = '';
+        row.innerHTML = `
+            <td><input type="text" class="item-name" placeholder="Item name"></td>
+            <td class="print-hide-col"><input type="number" class="item-gross" step="any" value="0" oninput="calcRow(this)"></td>
+            <td class="print-hide-col"><input type="number" class="item-tare" step="any" value="0" oninput="calcRow(this)"></td>
+            <td><input type="number" class="item-net" step="any" value="0" oninput="calcNetManual(this)"></td>
+            <td><input type="number" class="item-pcs" value="1"></td>
+            <td><input type="number" class="item-rate" step="any" value="0" oninput="calcRow(this)"></td>
+            <td class="item-total-price">0.00</td>
+            <td class="no-print" style="text-align:center;"><button class="btn btn-del" onclick="deleteRow(this)">X</button></td>
+        `;
+        tbody.appendChild(row);
+    }
 
-            orders.forEach(o => {
-                const btn = document.createElement('div');
-                btn.className = 'tab-btn' + (o.id === activeOrderId ? ' active' : '');
-                btn.onclick = () => switchTab(o.id);
+    function calcRow(element) {
+        const row = element.closest('tr');
+        const gross = parseFloat(row.querySelector('.item-gross').value) || 0;
+        const tare = parseFloat(row.querySelector('.item-tare').value) || 0;
+        const net = Math.max(0, gross - tare);
+        
+        row.querySelector('.item-net').value = net.toFixed(2);
+        
+        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+        const price = net * rate;
+        row.querySelector('.item-total-price').innerText = price.toFixed(2);
 
-                const label = o.customerName.trim() ? o.customerName : o.title;
-                btn.innerHTML = `
-                    <span>${escapeHtml(label)}</span>
-                    <button class="close-tab-btn" onclick="closeTab(event, '${o.id}')">&times;</button>
-                `;
-                container.appendChild(btn);
-            });
-        }
+        calcTotals(row.closest('.order-pane'));
+    }
 
-        function renderWorkspace() {
-            const container = document.getElementById('active-workspace');
-            const curr = orders.find(o => o.id === activeOrderId);
+    function calcNetManual(element) {
+        const row = element.closest('tr');
+        const net = parseFloat(row.querySelector('.item-net').value) || 0;
+        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+        const price = net * rate;
+        row.querySelector('.item-total-price').innerText = price.toFixed(2);
 
-            if (!curr) return;
+        calcTotals(row.closest('.order-pane'));
+    }
 
-            let totalNet = 0;
-            let totalPrice = 0;
+    function deleteRow(btn) {
+        const row = btn.closest('tr');
+        const pane = row.closest('.order-pane');
+        row.remove();
+        calcTotals(pane);
+    }
 
-            curr.items.forEach(i => {
-                totalNet += i.netWt;
-                totalPrice += i.price;
-            });
+    function calcTotals(pane) {
+        let totalNet = 0;
+        let totalPrice = 0;
 
-            container.innerHTML = `
-                <div class="order-container">
-                    <!-- Name (Top Left) & Date (Top Right) -->
-                    <div class="top-meta">
-                        <div class="meta-field">
-                            <label>Customer Name</label>
-                            <input type="text" value="${escapeHtml(curr.customerName)}" oninput="updateMeta('customerName', this.value)" placeholder="Enter Customer Name">
-                        </div>
-                        <div class="meta-field" style="max-width: 200px;">
-                            <label>Date</label>
-                            <input type="date" value="${curr.date}" onchange="updateMeta('date', this.value)">
-                        </div>
-                    </div>
+        pane.querySelectorAll('.items-tbody tr').forEach(row => {
+            totalNet += parseFloat(row.querySelector('.item-net').value) || 0;
+            totalPrice += parseFloat(row.querySelector('.item-total-price').innerText) || 0;
+        });
 
-                    <!-- Item Input Form -->
-                    <div class="add-item-form">
-                        <div class="form-grid">
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Item Name</label>
-                                <input type="text" id="inp-name" placeholder="e.g. Gold Ring">
-                            </div>
-                            <div class="form-group">
-                                <label>Gross Wt</label>
-                                <input type="number" step="0.001" id="inp-gross" placeholder="0.000" oninput="calcNet()">
-                            </div>
-                            <div class="form-group">
-                                <label>Tare Wt</label>
-                                <input type="number" step="0.001" id="inp-tare" placeholder="0.000" oninput="calcNet()">
-                            </div>
-                            <div class="form-group">
-                                <label>Net Wt</label>
-                                <input type="number" step="0.001" id="inp-net" placeholder="0.000" readonly style="background:#e5e7eb; font-weight: bold;">
-                            </div>
-                            <div class="form-group">
-                                <label>Pieces</label>
-                                <input type="number" id="inp-pcs" value="1" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>Rate</label>
-                                <input type="number" step="0.01" id="inp-rate" placeholder="0.00">
-                            </div>
-                            <button class="btn-add" onclick="addItem()">+ Add Item</button>
-                        </div>
-                    </div>
+        pane.querySelector('.total-net').innerText = totalNet.toFixed(2);
+        pane.querySelector('.total-price').innerText = totalPrice.toFixed(2);
+    }
 
-                    <!-- Order Items Table -->
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 35px;">#</th>
-                                    <th>Item Name</th>
-                                    <th class="text-right">Gross Wt</th>
-                                    <th class="text-right">Tare</th>
-                                    <th class="text-right">Net Wt</th>
-                                    <th class="text-right">Pcs</th>
-                                    <th class="text-right">Rate</th>
-                                    <th class="text-right">Price</th>
-                                    <th class="text-center" style="width: 60px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${curr.items.length === 0 ? `
-                                    <tr>
-                                        <td colspan="9" class="text-center" style="color: #6b7280; padding: 20px;">No items added yet.</td>
-                                    </tr>
-                                ` : curr.items.map((item, idx) => `
-                                    <tr>
-                                        <td>${idx + 1}</td>
-                                        <td>${escapeHtml(item.name)}</td>
-                                        <td class="text-right">${item.grossWt.toFixed(3)}</td>
-                                        <td class="text-right">${item.tareWt.toFixed(3)}</td>
-                                        <td class="text-right"><strong>${item.netWt.toFixed(3)}</strong></td>
-                                        <td class="text-right">${item.pcs}</td>
-                                        <td class="text-right">${item.rate.toFixed(2)}</td>
-                                        <td class="text-right"><strong>₹${item.price.toFixed(2)}</strong></td>
-                                        <td class="text-center">
-                                            <button class="btn-delete" onclick="removeItem(${idx})">Delete</button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
+    function printOrder(orderId) {
+        updatePrintHeader(orderId);
+        
+        // Hide all panes, show only the selected one for printing
+        document.querySelectorAll('.order-pane').forEach(p => p.classList.remove('active'));
+        const pane = document.getElementById(orderId);
+        pane.classList.add('active');
 
-                    <!-- Summary & Actions -->
-                    <div class="summary-bar">
-                        <div class="summary-details">
-                            <span>Total Net Wt: ${totalNet.toFixed(3)}</span>
-                            <span>Total Price: ₹${totalPrice.toFixed(2)}</span>
-                        </div>
-                        <button class="btn-print-trigger" onclick="openPreview()">Print Preview</button>
-                    </div>
-                </div>
-            `;
-        }
+        window.print();
+    }
 
-        function calcNet() {
-            const gross = parseFloat(document.getElementById('inp-gross').value) || 0;
-            const tare = parseFloat(document.getElementById('inp-tare').value) || 0;
-            const net = Math.max(0, gross - tare);
-            document.getElementById('inp-net').value = net ? net.toFixed(3) : '0.000';
-        }
+    // Initialize first tab on load
+    addNewOrderTab();
+</script>
 
-        function addItem() {
-            const curr = orders.find(o => o.id === activeOrderId);
-            if (!curr) return;
-
-            const name = document.getElementById('inp-name').value.trim() || 'Item';
-            const grossWt = parseFloat(document.getElementById('inp-gross').value) || 0;
-            const tareWt = parseFloat(document.getElementById('inp-tare').value) || 0;
-            const netWt = Math.max(0, grossWt - tareWt);
-            const pcs = parseInt(document.getElementById('inp-pcs').value) || 1;
-            const rate = parseFloat(document.getElementById('inp-rate').value) || 0;
-            const price = netWt * rate;
-
-            curr.items.push({ name, grossWt, tareWt, netWt, pcs, rate, price });
-            renderWorkspace();
-        }
-
-        function removeItem(idx) {
-            const curr = orders.find(o => o.id === activeOrderId);
-            if (!curr) return;
-            curr.items.splice(idx, 1);
-            renderWorkspace();
-        }
-
-        function updateMeta(field, val) {
-            const curr = orders.find(o => o.id === activeOrderId);
-            if (!curr) return;
-            curr[field] = val;
-            if (field === 'customerName') renderTabs();
-        }
-
-        function syncPrintData() {
-            const curr = orders.find(o => o.id === activeOrderId);
-            if (!curr) return;
-
-            const custName = curr.customerName.trim() || 'N/A';
-            const dateVal = curr.date || '-';
-
-            // Populate Preview Modal
-            document.getElementById('prev-name').innerText = custName;
-            document.getElementById('prev-date').innerText = dateVal;
-
-            // Populate Native Print Section
-            document.getElementById('print-target-name').innerText = custName;
-            document.getElementById('print-target-date').innerText = dateVal;
-
-            const prevBody = document.getElementById('prev-table-body');
-            const printBody = document.getElementById('print-target-body');
-
-            prevBody.innerHTML = '';
-            printBody.innerHTML = '';
-
-            let totalNet = 0;
-            let totalPrice = 0;
-
-            if (curr.items.length === 0) {
-                const emptyRow = '<tr><td colspan="6" class="text-center" style="color:#666; padding:12px;">No items in order</td></tr>';
-                prevBody.innerHTML = emptyRow;
-                printBody.innerHTML = emptyRow;
-            } else {
-                curr.items.forEach((item, idx) => {
-                    totalNet += item.netWt;
-                    totalPrice += item.price;
-
-                    const row = `
-                        <tr>
-                            <td>${idx + 1}</td>
-                            <td>${escapeHtml(item.name)}</td>
-                            <td class="text-right">${item.pcs}</td>
-                            <td class="text-right">${item.netWt.toFixed(3)}</td>
-                            <td class="text-right">${item.rate.toFixed(2)}</td>
-                            <td class="text-right">₹${item.price.toFixed(2)}</td>
-                        </tr>
-                    `;
-                    prevBody.innerHTML += row;
-                    printBody.innerHTML += row;
-                });
-            }
-
-            document.getElementById('prev-total-net').innerText = totalNet.toFixed(3);
-            document.getElementById('prev-total-price').innerText = '₹' + totalPrice.toFixed(2);
-
-            document.getElementById('print-target-total-net').innerText = totalNet.toFixed(3);
-            document.getElementById('print-target-total-price').innerText = '₹' + totalPrice.toFixed(2);
-        }
-
-        function openPreview() {
-            syncPrintData();
-            document.getElementById('modal-preview').style.display = 'flex';
-        }
-
-        function closePreview() {
-            document.getElementById('modal-preview').style.display = 'none';
-        }
-
-        function triggerDirectPrint() {
-            syncPrintData();
-            window.print();
-        }
-
-        function openPrintSheetInNewWindow() {
-            const curr = orders.find(o => o.id === activeOrderId);
-            if (!curr) return;
-
-            const custName = curr.customerName.trim() ? escapeHtml(curr.customerName) : 'N/A';
-            const dateVal = curr.date || '-';
-
-            let totalNet = 0;
-            let totalPrice = 0;
-            let rowsHtml = '';
-
-            curr.items.forEach((item, idx) => {
-                totalNet += item.netWt;
-                totalPrice += item.price;
-                rowsHtml += `
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 8px;">${idx + 1}</td>
-                        <td style="border: 1px solid #000; padding: 8px;">${escapeHtml(item.name)}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${item.pcs}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${item.netWt.toFixed(3)}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${item.rate.toFixed(2)}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">₹${item.price.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-
-            const html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Bill Sheet</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <style>
-                        body { font-family: -apple-system, sans-serif; padding: 20px; color: #000; }
-                        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 16px; }
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-                        th { border: 1px solid #000; padding: 8px; background: #f2f2f2; text-align: left; }
-                        .btn-print { background: #2563eb; color: #fff; border: none; padding: 10px 18px; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-bottom: 20px; }
-                        @media print { .btn-print { display: none; } }
-                    </style>
-                </head>
-                <body>
-                    <button class="btn-print" onclick="window.print()">Tap to Print / Save PDF</button>
-                    <div class="header">
-                        <div>
-                            <div style="font-size: 11px; text-transform: uppercase; color: #555; font-weight: bold;">Customer Name</div>
-                            <div style="font-size: 20px; font-weight: bold;">${custName}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 11px; text-transform: uppercase; color: #555; font-weight: bold;">Date</div>
-                            <div style="font-size: 15px; font-weight: bold;">${dateVal}</div>
-                        </div>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 40px;">#</th>
-                                <th>Item Name</th>
-                                <th style="text-align: right;">Pcs</th>
-                                <th style="text-align: right;">Net Wt</th>
-                                <th style="text-align: right;">Rate</th>
-                                <th style="text-align: right;">Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rowsHtml}</tbody>
-                    </table>
-                    <div style="border-top: 2px solid #000; padding-top: 10px; display: flex; justify-content: flex-end;">
-                        <div style="width: 220px; font-size: 15px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                                <span>Total Net Wt:</span>
-                                <strong>${totalNet.toFixed(3)}</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px solid #000; padding-top: 6px;">
-                                <span>Total Price:</span>
-                                <span>₹${totalPrice.toFixed(2)}</span>
-                            </div>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
-
-            const win = window.open('', '_blank');
-            if (win) {
-                win.document.open();
-                win.document.write(html);
-                win.document.close();
-            } else {
-                alert("Popup was blocked. Please allow popups or use 'Print Direct'.");
-            }
-        }
-
-        function escapeHtml(s) {
-            if (!s) return '';
-            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-        }
-    </script>
 </body>
 </html>
