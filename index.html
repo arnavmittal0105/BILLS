@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rough Bill Desk</title>
-    <!-- Include Tesseract.js for OCR camera scanning -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        /* Base Reset & Typography */
+        /* Base Styling */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -22,10 +20,12 @@
             -webkit-text-size-adjust: 100%;
         }
 
+        /* Interactive Screen Only Elements */
         .screen-only {
             display: block;
         }
 
+        /* Printable Section (Hidden on screen, shown on print) */
         #print-section {
             display: none;
         }
@@ -195,18 +195,6 @@
             touch-action: manipulation;
         }
 
-        .btn-scan {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            padding: 6px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-top: 4px;
-        }
-
         /* Items Table */
         .table-responsive {
             width: 100%;
@@ -348,29 +336,6 @@
             font-size: 14px;
         }
 
-        /* Camera Scanner Modal Styling */
-        #camera-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            padding: 15px;
-        }
-
-        #camera-feed {
-            width: 100%;
-            max-width: 450px;
-            border-radius: 8px;
-            border: 2px solid #fff;
-        }
-
         /* Printable Receipt Structure */
         .receipt-card {
             border: 1px solid #000;
@@ -444,7 +409,7 @@
             padding-top: 6px;
         }
 
-        /* Print Media Styles */
+        /* CRITICAL PRINT CSS FOR IPHONE / MAC / ALL BROWSERS */
         @media print {
             body {
                 background: #fff !important;
@@ -453,7 +418,7 @@
                 margin: 0 !important;
             }
 
-            .screen-only, .modal-backdrop, .header-bar, .tabs-bar, #active-workspace, #camera-modal {
+            .screen-only, .modal-backdrop, .header-bar, .tabs-bar, #active-workspace {
                 display: none !important;
             }
 
@@ -488,16 +453,6 @@
 
         <!-- Active Tab Order Workspace -->
         <div id="active-workspace"></div>
-    </div>
-
-    <!-- CAMERA SCANNER OVERLAY -->
-    <div id="camera-modal">
-        <video id="camera-feed" autoplay playsinline></video>
-        <div id="scan-status" style="color: #fff; margin: 15px 0; font-size: 16px; font-weight: bold;">Point camera at scale display</div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-pri" onclick="captureAndScan()">Capture & Scan Weight</button>
-            <button class="btn-sec" onclick="closeCamera()">Cancel</button>
-        </div>
     </div>
 
     <!-- PREVIEW MODAL -->
@@ -552,7 +507,7 @@
         </div>
     </div>
 
-    <!-- TARGET FOR NATIVE PRINTING -->
+    <!-- DEDICATED DOM TARGET FOR NATIVE PRINTING -->
     <div id="print-section">
         <div class="receipt-card">
             <div class="receipt-header">
@@ -599,7 +554,6 @@
         // State Storage
         let orders = [];
         let activeOrderId = null;
-        let mediaStream = null;
 
         window.onload = function() {
             createNewTab();
@@ -692,7 +646,7 @@
 
             container.innerHTML = `
                 <div class="order-container">
-                    <!-- Customer Name & Date -->
+                    <!-- Name (Top Left) & Date (Top Right) -->
                     <div class="top-meta">
                         <div class="meta-field">
                             <label>Customer Name</label>
@@ -714,7 +668,6 @@
                             <div class="form-group">
                                 <label>Gross Wt</label>
                                 <input type="number" step="0.001" id="inp-gross" placeholder="0.000" oninput="calcNet()">
-                                <button class="btn-scan" onclick="openCamera()">📷 Scan Wt</button>
                             </div>
                             <div class="form-group">
                                 <label>Tare Wt</label>
@@ -736,7 +689,7 @@
                         </div>
                     </div>
 
-                    <!-- Items Table -->
+                    <!-- Order Items Table -->
                     <div class="table-responsive">
                         <table>
                             <thead>
@@ -776,7 +729,7 @@
                         </table>
                     </div>
 
-                    <!-- Summary Bar -->
+                    <!-- Summary & Actions -->
                     <div class="summary-bar">
                         <div class="summary-details">
                             <span>Total Net Wt: ${totalNet.toFixed(3)}</span>
@@ -786,65 +739,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        // Camera & OCR Functions
-        async function openCamera() {
-            const modal = document.getElementById('camera-modal');
-            const video = document.getElementById('camera-feed');
-            modal.style.display = 'flex';
-            document.getElementById('scan-status').innerText = "Point camera at scale display";
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: "environment" } }
-                });
-                video.srcObject = mediaStream;
-            } catch (err) {
-                alert("Could not access camera: " + err.message);
-                closeCamera();
-            }
-        }
-
-        function closeCamera() {
-            const modal = document.getElementById('camera-modal');
-            modal.style.display = 'none';
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-        }
-
-        async function captureAndScan() {
-            const video = document.getElementById('camera-feed');
-            const status = document.getElementById('scan-status');
-            status.innerText = "Processing image...";
-
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageDataUrl = canvas.toDataURL('image/png');
-            closeCamera();
-
-            status.innerText = "Reading weight...";
-            try {
-                const result = await Tesseract.recognize(imageDataUrl, 'eng', {
-                    logger: m => {}
-                });
-                const text = result.data.text;
-                const matches = text.match(/\d+\.\d+/);
-                if (matches && matches.length > 0) {
-                    const detectedVal = parseFloat(matches[0]);
-                    document.getElementById('inp-gross').value = detectedVal.toFixed(3);
-                    calcNet();
-                } else {
-                    alert("Could not clearly read numbers. Try holding the camera steadier or enter manually.");
-                }
-            } catch (err) {
-                alert("OCR Error: " + err.message);
-            }
         }
 
         function calcNet() {
@@ -891,8 +785,11 @@
             const custName = curr.customerName.trim() || 'N/A';
             const dateVal = curr.date || '-';
 
+            // Populate Preview Modal
             document.getElementById('prev-name').innerText = custName;
             document.getElementById('prev-date').innerText = dateVal;
+
+            // Populate Native Print Section
             document.getElementById('print-target-name').innerText = custName;
             document.getElementById('print-target-date').innerText = dateVal;
 
@@ -931,6 +828,7 @@
 
             document.getElementById('prev-total-net').innerText = totalNet.toFixed(3);
             document.getElementById('prev-total-price').innerText = '₹' + totalPrice.toFixed(2);
+
             document.getElementById('print-target-total-net').innerText = totalNet.toFixed(3);
             document.getElementById('print-target-total-price').innerText = '₹' + totalPrice.toFixed(2);
         }
@@ -982,12 +880,10 @@
                     <title>Bill Sheet</title>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <style>
-                        @page { size: auto; margin: 5mm; }
                         body { font-family: -apple-system, sans-serif; padding: 20px; color: #000; }
                         .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 16px; }
                         table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
                         th { border: 1px solid #000; padding: 8px; background: #f2f2f2; text-align: left; }
-                        .totals { display: flex; justify-content: flex-end; border-top: 2px solid #000; padding-top: 10px; font-weight: bold; }
                         .btn-print { background: #2563eb; color: #fff; border: none; padding: 10px 18px; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-bottom: 20px; }
                         @media print { .btn-print { display: none; } }
                     </style>
@@ -1004,11 +900,10 @@
                             <div style="font-size: 15px; font-weight: bold;">${dateVal}</div>
                         </div>
                     </div>
-
                     <table>
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th style="width: 40px;">#</th>
                                 <th>Item Name</th>
                                 <th style="text-align: right;">Pcs</th>
                                 <th style="text-align: right;">Net Wt</th>
@@ -1018,11 +913,16 @@
                         </thead>
                         <tbody>${rowsHtml}</tbody>
                     </table>
-
-                    <div class="totals">
-                        <div>
-                            <div>Total Net Wt: ${totalNet.toFixed(3)}</div>
-                            <div style="font-size: 18px; margin-top: 4px;">Total Price: ₹${totalPrice.toFixed(2)}</div>
+                    <div style="border-top: 2px solid #000; padding-top: 10px; display: flex; justify-content: flex-end;">
+                        <div style="width: 220px; font-size: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Total Net Wt:</span>
+                                <strong>${totalNet.toFixed(3)}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px solid #000; padding-top: 6px;">
+                                <span>Total Price:</span>
+                                <span>₹${totalPrice.toFixed(2)}</span>
+                            </div>
                         </div>
                     </div>
                 </body>
@@ -1030,17 +930,18 @@
             `;
 
             const win = window.open('', '_blank');
-            win.document.write(html);
-            win.document.close();
+            if (win) {
+                win.document.open();
+                win.document.write(html);
+                win.document.close();
+            } else {
+                alert("Popup was blocked. Please allow popups or use 'Print Direct'.");
+            }
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text.replace(/&/g, "&amp;")
-                       .replace(/</g, "&lt;")
-                       .replace(/>/g, "&gt;")
-                       .replace(/"/g, "&quot;")
-                       .replace(/'/g, "&#039;");
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
     </script>
 </body>
