@@ -807,7 +807,7 @@
         }
 
         // CUSTOM FILTER FOR ESSAE DS-415N CYAN LED DISPLAY
-        /*
+        
         async function captureAndScan() {
             const video = document.getElementById('camera-feed');
             const status = document.getElementById('scan-status');
@@ -867,76 +867,7 @@
                 alert("OCR Processing Error: " + err.message);
             }
         }
-        */
-
-        async function captureAndScan() {
-            const video = document.getElementById('camera-feed');
-            const status = document.getElementById('scan-status');
-            status.innerText = "Processing Essae LED display...";
-
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imgData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                
-                const isCyanLed = (g > 130 && b > 130 && r < 190);
-
-                if (isCyanLed) {
-                    data[i] = 0;
-                    data[i + 1] = 0;
-                    data[i + 2] = 0;
-                } else {
-                    data[i] = 255;
-                    data[i + 1] = 255;
-                    data[i + 2] = 255;
-                }
-            }
-            ctx.putImageData(imgData, 0, 0);
-
-            const processedImage = canvas.toDataURL('image/png');
-            closeCamera();
-
-            try {
-                const result = await Tesseract.recognize(processedImage, 'eng', {
-                    tessedit_char_whitelist: '0123456789.'
-                });
-                
-                let rawText = result.data.text.replace(/[^0-9.]/g, '');
-                
-                // POST-CORRECTION FOR ESSAE SCALE:
-                // Weighing scales usually use 3 decimal places (e.g. .320, .360). 
-                // If OCR misreads a trailing '0' as an '8' (e.g., ends in .368), correct it to '0'.
-                if (rawText.includes('.')) {
-                    let parts = rawText.split('.');
-                    if (parts[1] && parts[1].length === 3 && parts[1].endsWith('8')) {
-                        // Check if it's likely a misread trailing zero
-                        parts[1] = parts[1].slice(0, 2) + '0';
-                        rawText = parts.join('.');
-                    }
-                }
-
-                const detectedVal = parseFloat(rawText);
-
-                if (!isNaN(detectedVal)) {
-                    document.getElementById('inp-gross').value = detectedVal.toFixed(3);
-                    calcNet();
-                } else {
-                    alert("Could not detect digits. Hold phone closer to the display screen.");
-                }
-            } catch (err) {
-                alert("OCR Processing Error: " + err.message);
-            }
-        }
+        
 
         function calcNet() {
             const gross = parseFloat(document.getElementById('inp-gross').value) || 0;
